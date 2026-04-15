@@ -50,7 +50,8 @@ namespace ShoppingCart.API.Services
                 Subject = new ClaimsIdentity(
                 [
                     new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                    new Claim(JwtRegisteredClaimNames.Email, user.Email)
+                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                    new Claim(ClaimTypes.Name, user.Id.ToString())
                 ]),
                 Expires = DateTime.UtcNow.AddMinutes(_appSettings.Jwt.ExpiresMinutes),
                 SigningCredentials = credentials,

@@ -1,11 +1,9 @@
 ﻿namespace ShoppingCart.Domain.Entities
 {
-    public class CartItem : BaseEntity
+    public class FavoriteProduct : BaseEntity
     {
         public Guid UserId { get; set; }
         public int ProductId { get; set; }
-        public int Quantity { get; set; }
-
         public virtual User User { get; set; }
     }
 }

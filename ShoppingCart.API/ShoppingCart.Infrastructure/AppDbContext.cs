@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ShoppingCart.Domain.Entities;
-using ShoppingCart.Domain.Entities;
 
 namespace ShoppingCart.Infrastructure
 {
@@ -25,6 +24,16 @@ namespace ShoppingCart.Infrastructure
                     .WithMany(u => u.CartItems)        
                     .HasForeignKey(ci => ci.UserId)    
                     .OnDelete(DeleteBehavior.Cascade); 
+            });
+
+            // Configuration for Favorite Product
+            modelBuilder.Entity<FavoriteProduct>(entity =>
+            {
+                entity.ToTable("FavoriteProducts");
+                entity.HasOne(ci => ci.User)
+                    .WithMany(u => u.FavoriteProducts)
+                    .HasForeignKey(ci => ci.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             // Configuration for User

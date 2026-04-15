@@ -22,6 +22,18 @@ builder.Services.AddRouting(options =>
     options.LowercaseUrls = true;
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+                    .SetIsOriginAllowed(_ => true)
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+    });
+});
+
 builder.Services
     .AddControllers()
     .AddJsonOptions(o =>
@@ -64,8 +76,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddHttpClient();
+// Dependency Injection for Services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+
 
 var app = builder.Build();
 
@@ -78,6 +94,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

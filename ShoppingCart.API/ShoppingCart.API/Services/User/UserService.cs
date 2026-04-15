@@ -31,5 +31,10 @@ namespace ShoppingCart.API.Services
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
+
+        public async Task<User?> GetUserByIdAsync(Guid id)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        }   
     }
 }

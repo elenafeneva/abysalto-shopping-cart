@@ -1,5 +1,4 @@
 ﻿using ShoppingCart.API.Entities.DTOs;
-using ShoppingCart.Domain.Entities;
 
 namespace ShoppingCart.API.Services
 {

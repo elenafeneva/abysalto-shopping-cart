@@ -15,5 +15,6 @@
         public string PasswordHash { get; set; } = string.Empty;
 
         public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+        public virtual ICollection<FavoriteProduct> FavoriteProducts { get; set; } = new List<FavoriteProduct>();
     }
 }

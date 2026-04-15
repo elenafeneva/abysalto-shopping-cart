@@ -1,5 +1,8 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ShoppingCart.API.Entities.Enums;
+using ShoppingCart.API.Features;
 using ShoppingCart.API.Features.Auth;
 
 namespace ShoppingCart.API.Controllers
@@ -17,10 +20,31 @@ namespace ShoppingCart.API.Controllers
 
         [HttpPost("register")]
         public async Task<ActionResult<RegisterUser.Response>> RegisterAsync([FromBody] RegisterUser.Request request)
-            => await _mediator.Send(request);
+        {
+            var response = await _mediator.Send(request);
+            if (response?.AuthResult?.FailureReason == AuthFailureReason.None)
+                return Ok(response);
+            return BadRequest(response);
+        }
 
         [HttpPost("login")]
         public async Task<ActionResult<LoginUser.Response>> LoginAsync([FromBody] LoginUser.Request request)
-            => await _mediator.Send(request);
+        {
+            var response = await _mediator.Send(request);
+            if (response?.AuthResult?.FailureReason == AuthFailureReason.None)
+                return Ok(response);
+            return BadRequest(response);
+        }
+
+        [Authorize]
+        [HttpGet("currentUser")]
+        public async Task<QueryUser.Response> GetCurrentUser()
+        {
+            if(User?.Identity?.IsAuthenticated != true && string.IsNullOrWhiteSpace(User?.Identity?.Name))
+                return new QueryUser.Response();
+
+            var userId = Guid.Parse(User.Identity.Name);
+            return await _mediator.Send(new QueryUser.Request { Id = userId });
+        }
     }
 }
