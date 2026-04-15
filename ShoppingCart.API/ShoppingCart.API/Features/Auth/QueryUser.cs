@@ -3,7 +3,7 @@ using MediatR;
 using ShoppingCart.API.Services;
 using ShoppingCart.Domain.Entities;
 
-namespace ShoppingCart.API.Features
+namespace ShoppingCart.API.Features.Auth
 {
     public class QueryUser
     {

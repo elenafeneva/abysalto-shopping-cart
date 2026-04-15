@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingCart.API.Entities.Enums;
-using ShoppingCart.API.Features;
 using ShoppingCart.API.Features.Auth;
 
 namespace ShoppingCart.API.Controllers

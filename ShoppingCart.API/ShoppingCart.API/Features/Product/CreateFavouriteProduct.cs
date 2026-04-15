@@ -1,28 +1,28 @@
 ﻿using FluentValidation;
 using MediatR;
 using ShoppingCart.API.Services;
-using ShoppingCart.Domain.Entities.DTOs;
+using ShoppingCart.Domain.Entities;
 
 namespace ShoppingCart.API.Features
 {
-    public class QueryProduct 
+    public class CreateFavouriteProduct
     {
-        public class Request : IRequest<Response> 
-        { 
-            public int Id { get; set; }
+        public class Request : IRequest<Response>
+        {
+            public int ProductId { get; set; }
             public Guid UserId { get; set; }
         }
 
-        public class Response 
+        public class Response
         {
-            public ProductDto Product { get; set; } = new ProductDto(); 
+            public bool FavoriteProductCreated { get; set; } = false;
         }
 
         public class Validator : AbstractValidator<Request>
         {
             public Validator()
             {
-                RuleFor(x => x.Id)
+                RuleFor(x => x.ProductId)
                     .NotEmpty()
                     .GreaterThan(0);
                 RuleFor(x => x.UserId)
@@ -41,11 +41,11 @@ namespace ShoppingCart.API.Features
 
             public async Task<Response> Handle(Request request, CancellationToken cancellationToken)
             {
-                var product = await _productService.GetProductByIdAsync(request.Id, request.UserId);
-                return new Response
-                {
-                    Product = product
-                };
+                FavoriteProduct favoriteProduct = new FavoriteProduct(request.ProductId, request.UserId);
+                var response = new Response();
+                response.FavoriteProductCreated = await _productService.CreateFavoriteProduct(favoriteProduct);
+                
+                return response;
             }
         }
     }

@@ -34,8 +34,8 @@ namespace ShoppingCart.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("LastModifiedOnUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
@@ -62,8 +62,8 @@ namespace ShoppingCart.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("LastModifiedOnUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");

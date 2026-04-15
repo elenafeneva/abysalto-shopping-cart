@@ -12,8 +12,8 @@ using ShoppingCart.Infrastructure;
 namespace ShoppingCart.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260415152247_CreateFavoriteProductsTable")]
-    partial class CreateFavoriteProductsTable
+    [Migration("20260415223204_CreateTables")]
+    partial class CreateTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,8 +37,8 @@ namespace ShoppingCart.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("LastModifiedOnUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
@@ -65,8 +65,8 @@ namespace ShoppingCart.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("LastModifiedOnUtc")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");

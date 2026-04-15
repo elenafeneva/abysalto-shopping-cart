@@ -14,5 +14,6 @@
         public string Sku { get; set; } = string.Empty;
         public double Weight { get; set; }
         public string[] Images { get; set; }
+        public bool IsFavorite { get; set; }
     }
 }

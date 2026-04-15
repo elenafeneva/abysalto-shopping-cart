@@ -1,6 +1,7 @@
-﻿using ShoppingCart.Domain.Entities.DTOs;
-using System.Collections.Generic;
-using System.Text.Json;
+﻿using Microsoft.EntityFrameworkCore;
+using ShoppingCart.Domain.Entities;
+using ShoppingCart.Domain.Entities.DTOs;
+using ShoppingCart.Infrastructure;
 using System.Text.Json.Nodes;
 
 namespace ShoppingCart.API.Services
@@ -9,20 +10,30 @@ namespace ShoppingCart.API.Services
     {
         private readonly HttpClient _httpClient;
         private readonly AppSettings _appSettings;
+        private readonly AppDbContext _context;
 
 
-        public ProductService(IHttpClientFactory httpClientFactory, AppSettings appSettings)
+        public ProductService(IHttpClientFactory httpClientFactory, AppSettings appSettings, AppDbContext appDbContext)
         {
             _httpClient = httpClientFactory.CreateClient();
             _appSettings = appSettings;
+            _context = appDbContext;
         }
 
-        public async Task<ProductDto> GetProductByIdAsync(int id)
+        public async Task<bool> CreateFavoriteProduct(FavoriteProduct favoriteProduct)
+        {
+            await _context.FavoriteProducts.AddAsync(favoriteProduct);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<ProductDto> GetProductByIdAsync(int id, Guid userId)
         {
             var response = await _httpClient.GetAsync($"{_appSettings.DummyProductsUrl}/{id}");
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
             var json = JsonNode.Parse(content);
+            var favoriteProductIds = await GetFavoriteProductIdsByUserIdAsync(userId);
             var product = new ProductDto
             {
                 Id = json?["id"]?.GetValue<int>() ?? 0,
@@ -36,12 +47,13 @@ namespace ShoppingCart.API.Services
                 Brand = json?["brand"]?.GetValue<string>() ?? string.Empty,
                 Sku = json?["sku"]?.GetValue<string>() ?? string.Empty,
                 Weight = json?["weight"]?.GetValue<double>() ?? 0.0,
-                Images = json?["images"]?.AsArray().Select(i => i.GetValue<string>()).ToArray() ?? Array.Empty<string>()
+                Images = json?["images"]?.AsArray().Select(i => i.GetValue<string>()).ToArray() ?? Array.Empty<string>(),
+                IsFavorite = favoriteProductIds.Contains(json?["id"]?.GetValue<int>() ?? 0)
             };
             return product;
         }
 
-        public async Task<List<ProductDto>> GetProductsAsync(int limit, int skip)
+        public async Task<List<ProductDto>> GetProductsAsync(int limit, int skip, Guid userId)
         {
             var response = await _httpClient.GetAsync($"{_appSettings.DummyProductsUrl}?limit={limit}&skip={skip}");
             response.EnsureSuccessStatusCode();
@@ -52,6 +64,7 @@ namespace ShoppingCart.API.Services
             if (productsList is null || !productsList.Any())
                 return new List<ProductDto>();
 
+            var favoriteProductIds = await GetFavoriteProductIdsByUserIdAsync(userId);
             var products = productsList.Select(p => new ProductDto
             {
                 Id = p["id"]?.GetValue<int>() ?? 0,
@@ -65,10 +78,18 @@ namespace ShoppingCart.API.Services
                 Brand = p["brand"]?.GetValue<string>() ?? string.Empty,
                 Sku = p["sku"]?.GetValue<string>() ?? string.Empty,
                 Weight = p["weight"]?.GetValue<double>() ?? 0.0,
-                Images = p["images"]?.AsArray().Select(i => i.GetValue<string>()).ToArray() ?? Array.Empty<string>()
+                Images = p["images"]?.AsArray().Select(i => i.GetValue<string>()).ToArray() ?? Array.Empty<string>(),
+                IsFavorite = favoriteProductIds.Contains(json?["id"]?.GetValue<int>() ?? 0)
             }).ToList();
             return products;
         }
 
+        private async Task<List<int>> GetFavoriteProductIdsByUserIdAsync(Guid userId)
+        {
+            return await _context.FavoriteProducts
+                .Where(fp => fp.UserId == userId)
+                .Select(fp => fp.ProductId)
+                .ToListAsync();
+        }
     }
 }
