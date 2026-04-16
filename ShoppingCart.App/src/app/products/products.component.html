@@ -1,1 +1,53 @@
-<p>products works!</p>
+<div class="card">
+    <p-table [value]="products" [paginator]="true" [rows]="10" [lazy]="true" (onLazyLoad)="getProducts($event)"
+        [showCurrentPageReport]="true" [totalRecords]="totalRecords" responsiveLayout="scroll"
+        [rowsPerPageOptions]="[5, 10, 20]">
+
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 100px">Image</th>
+                <th pSortableColumn="title">Name <p-sortIcon field="title"></p-sortIcon></th>
+                <th>Category</th>
+                <th pSortableColumn="price">Price <p-sortIcon field="price"></p-sortIcon></th>
+                <th>Stock</th>
+                <th>Rating</th>
+                <th style="width: 150px">Actions</th>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-product>
+            <tr>
+                <td>
+                    <img [src]="product.images[0]" [alt]="product.title" class="product-thumbnail" />
+                </td>
+                <td class="font-bold"><a (click)="viewProduct(product)"
+                        class="cursor-pointer text-primary hover:underline">
+                        {{ product.title }}
+                    </a></td>
+                <td>{{ product.category }}</td>
+                <td>{{ product.price | currency:'USD' }}</td>
+                <td>
+                    <p-tag [value]="product.stock" [severity]="getSeverity(product.stock)"></p-tag>
+                </td>
+                <td>
+                    <div class="flex items-center gap-1">
+                        {{ product.rating }} <i class="pi pi-star-fill text-yellow-500 text-xs"></i>
+                    </div>
+                </td>
+                <td>
+                    <div class="flex gap-2">
+                        <p-button [icon]="product.isFavorite ? 'pi pi-heart-fill' : 'pi pi-heart'" [outlined]="true"
+                            severity="secondary" size="small" (click)="addToFavorites(product)">
+                        </p-button> 
+                        <p-button icon="pi pi-shopping-cart" size="small" [disabled]="product.stock <= 0"
+                            [style]="{ 'margin-left': '0.4rem' }" (click)="addProductToCart(product)">
+                        </p-button>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<app-product-details-dialog *ngIf="selectedProduct" [(visible)]="displayDetails" [productId]="selectedProduct?.id"
+    (onAddToCart)="addProductToCart(selectedProduct)">
+</app-product-details-dialog>

@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth/auth.service';
+import { UserService } from '../services/user/user.service';
 
 @Component({
   selector: 'app-sign-in',
@@ -16,6 +17,7 @@ export class SignInComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+    private userService: UserService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {
@@ -27,7 +29,7 @@ export class SignInComponent {
 
   ngOnInit(): void {
     if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/dashboard']);
+        this.router.navigate(['/products']);
     }
   }
 
@@ -40,11 +42,12 @@ export class SignInComponent {
     };
     this.loading = true;
     this.authService.signIn(credentials).subscribe({
-      next: (token: string) => {
+      next: (result: any) => {
         this.loading = false;
         this.cdr.detectChanges();
         this.signInForm.get('password')?.reset();
-        this.authService.setToken(token);
+        this.authService.setToken(result.authResult.token);
+        this.authService.isLoggedIn() && this.userService.userRefresh.next();
         this.router.navigate(['/products']);
       },
       error: (err : any) => {

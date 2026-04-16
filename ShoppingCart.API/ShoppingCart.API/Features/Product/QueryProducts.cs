@@ -11,6 +11,8 @@ namespace ShoppingCart.API.Features
         {
             public int Limit { get; set; } = 0;
             public int Skip { get; set; } = 0;
+            public string SortField { get; set; } = string.Empty;
+            public string SortOrder { get; set; } = string.Empty;
             public Guid UserId { get; set; }
 
         }
@@ -18,9 +20,10 @@ namespace ShoppingCart.API.Features
         public class Response
         {
             public IEnumerable<ProductDto> Items { get; set; } = Array.Empty<ProductDto>();
-        }
+            public int Total { get; set; } = 0;
+        }   
 
-        public class Validator : AbstractValidator<Request>
+        public class Validator : AbstractValidator<Request> 
         {
             public Validator()
             {
@@ -40,10 +43,11 @@ namespace ShoppingCart.API.Features
 
             public async Task<Response> Handle(Request request, CancellationToken cancellationToken)
             {
-                var products = await _productService.GetProductsAsync(request.Limit, request.Skip, request.UserId);
+                var responseProducts = await _productService.GetProductsAsync(request.Limit, request.Skip, request.SortField, request.SortOrder, request.UserId);
                 return new Response
                 {
-                    Items = products
+                    Items = responseProducts.Products,
+                    Total = responseProducts.TotalNumberOfProducts
                 };
             }
         }

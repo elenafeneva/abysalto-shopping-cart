@@ -15,5 +15,6 @@
         public double Weight { get; set; }
         public string[] Images { get; set; }
         public bool IsFavorite { get; set; }
+        public int Quantity { get; set; }
     }
 }

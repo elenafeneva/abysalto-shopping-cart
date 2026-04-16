@@ -1,48 +1,49 @@
 ﻿using FluentValidation;
 using MediatR;
 using ShoppingCart.API.Services;
-using ShoppingCart.Domain.Entities;
+using ShoppingCart.Domain.Entities.DTOs;
 
 namespace ShoppingCart.API.Features
 {
-    public class QueryUser
+    public class QueryCartItems
     {
         public class Request : IRequest<Response>
         {
-            public Guid Id { get; set; }
+            public Guid UserId { get; set; }
         }
 
         public class Response
         {
-            public User User { get; set; } = new User();
-        }
+            public List<ProductDto> Items { get; set; } = new List<ProductDto>();
+        }   
 
         public class Validator : AbstractValidator<Request>
         {
             public Validator()
             {
-                RuleFor(x => x.Id)
+                RuleFor(x => x.UserId)
                     .NotEmpty();
             }
         }
 
         public class Handler : IRequestHandler<Request, Response>
         {
-            private readonly IUserService _userService;
+            private readonly ICartService _cartService;
 
-            public Handler(IUserService userService)
+            public Handler(ICartService cartService)
             {
-                _userService = userService;
+                _cartService = cartService;
             }
 
             public async Task<Response> Handle(Request request, CancellationToken cancellationToken)
             {
-                var user = await _userService.GetUserByIdAsync(request.Id);
-                return new Response
+                var products = await _cartService.GetCartProductsByUserId(request.UserId);
+                return new Response()
                 {
-                    User = user
+                    Items = products
                 };
             }
         }
+
     }
 }

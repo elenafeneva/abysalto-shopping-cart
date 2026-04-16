@@ -1,11 +1,10 @@
 ﻿using FluentValidation;
 using MediatR;
 using ShoppingCart.API.Entities.DTOs;
-using ShoppingCart.API.Entities.Enums;
 using ShoppingCart.API.Services;
 using System.ComponentModel.DataAnnotations;
 
-namespace ShoppingCart.API.Features.Auth
+namespace ShoppingCart.API.Features
 {
     public class RegisterUser
     {

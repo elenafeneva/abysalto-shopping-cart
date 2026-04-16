@@ -14,6 +14,19 @@ import { PasswordModule } from 'primeng/password';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './services/auth/auth.interceptor';
+import { DataViewModule } from 'primeng/dataview';
+import { TagModule } from 'primeng/tag';
+import { TableModule } from 'primeng/table';
+import { RatingModule } from 'primeng/rating'; 
+import { MenubarModule } from 'primeng/menubar';
+import { ProductDetailsDialogComponent } from './products/product-details-dialog/product-details-dialog.component';
+import { DialogModule } from 'primeng/dialog';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { CartComponent } from './cart/cart.component';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 @NgModule({
   declarations: [
@@ -21,6 +34,8 @@ import { HttpClientModule } from '@angular/common/http';
     SignUpComponent,
     SignInComponent,
     ProductsComponent,
+    ProductDetailsDialogComponent,
+    CartComponent,
   ],
   imports: [
     BrowserModule,
@@ -33,8 +48,19 @@ import { HttpClientModule } from '@angular/common/http';
     CardModule,
     PasswordModule,
     ReactiveFormsModule,
+    DataViewModule,
+    TagModule,
+    TableModule,
+    RatingModule,
+    MenubarModule,
+    DialogModule,
+    ToastModule, 
+    InputNumberModule
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    MessageService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

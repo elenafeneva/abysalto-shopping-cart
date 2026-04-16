@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import {
   FormGroup,
-  ReactiveFormsModule,
   ValidationErrors,
   ValidatorFn,
   Validators,
@@ -47,11 +46,7 @@ export class SignUpComponent {
     };
   }
 
-  ngOnInit(): void {
-    if (this.authService.isLoggedIn()) {
-      //this.router.navigate(['/dashboard']); -- Redirect to products if already logged in
-    }
-  }
+  ngOnInit(): void {}
 
   onSubmit(): void {
     this.errorMessage = null;
@@ -64,7 +59,7 @@ export class SignUpComponent {
         this.signUpForm.get('password')?.reset();
         this.signUpForm.get('confirmPassword')?.reset();
         if (res?.isSuccess || res?.authResult?.isSuccess) {
-          this.router.navigate(['/products']);
+          this.router.navigate(['/sign-in']);
         } else {
           this.errorMessage = res?.failureReason || res?.authResult?.failureReason || 'Sign up failed. Please try again.';
         }

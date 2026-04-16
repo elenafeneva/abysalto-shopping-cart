@@ -1,0 +1,18 @@
+.product-thumbnail {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    background: #f8f9fa;
+    border: 1px solid #eee;
+}
+
+/* Adjusting cell padding for maximum "smallness" */
+:host ::ng-deep .p-datatable-sm .p-datatable-tbody > tr > td {
+    padding: 0.4rem 0.6rem !important;
+    font-size: 0.85rem;
+}
+
+:host ::ng-deep .p-datatable-sm .p-datatable-thead > tr > th {
+    padding: 0.5rem 0.6rem !important;
+    font-size: 0.85rem;
+}

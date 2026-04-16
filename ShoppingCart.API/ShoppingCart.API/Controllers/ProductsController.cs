@@ -18,22 +18,25 @@ namespace ShoppingCart.API.Controllers
         }
 
         [HttpGet]
-        public async Task<QueryProducts.Response> GetProductsAsync(int limit, int skip)
+        public async Task<QueryProducts.Response> GetProductsAsync([FromQuery] int limit, int skip, string sortField, string sortOrder)
         {
             var request = new QueryProducts.Request
             {
                 Limit = limit,
                 Skip = skip,
+                SortField = sortField,
+                SortOrder = sortOrder,
                 UserId = Guid.Parse(User?.Identity?.Name)
             };
-            return await _mediator.Send(request);
+            var response = await _mediator.Send(request);
+            return response;
         }
 
         [HttpGet("{id}")]
         public async Task<QueryProduct.Response> GetProductByIdAsync([FromRoute] int id)
             => await _mediator.Send(new QueryProduct.Request { Id = id, UserId = Guid.Parse(User?.Identity?.Name)});
 
-        [HttpPost("{productId}")]
+        [HttpPost("{productId}/favorites")]
         public async Task<CreateFavouriteProduct.Response> CreateFavouriteProduct([FromRoute] int productId)
         {
             var userId = Guid.Parse(User?.Identity?.Name);

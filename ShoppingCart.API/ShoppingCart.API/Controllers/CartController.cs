@@ -17,6 +17,14 @@ namespace ShoppingCart.API.Controllers
             _mediator = mediator;
         }
 
+
+        [HttpGet]
+        public async Task<QueryCartItems.Response> GetCartItems()
+        {
+            var request = new QueryCartItems.Request { UserId = Guid.Parse(User?.Identity?.Name)};
+            return await _mediator.Send(request);
+        }
+
         [HttpPost]
         public async Task<CreateCartItem.Response> CreateCartItemAsync([FromBody] CreateCartItem.Request request)
         {
@@ -24,13 +32,11 @@ namespace ShoppingCart.API.Controllers
             return await _mediator.Send(request);
         }
 
-        [HttpDelete("{cartItemId}")]
-        public async Task<DeleteCartItem.Response> DeleteCartItemAsync(Guid cartItemId)
+        [HttpDelete("{productId}")]
+        public async Task<DeleteCartItem.Response> DeleteCartItemAsync([FromRoute] int productId)
         {
-            var request = new DeleteCartItem.Request { CartItemId = cartItemId };
+            var request = new DeleteCartItem.Request { ProductId = productId, UserId = Guid.Parse(User?.Identity?.Name) };
             return await _mediator.Send(request);
         }
-
-        //Query cart items for a user -- TO IMPLEMENT
     }
 }

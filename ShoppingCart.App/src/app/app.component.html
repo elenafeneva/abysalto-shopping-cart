@@ -1,1 +1,34 @@
+<p-toast></p-toast>
+<div [style]="{ 'margin-bottom': '1rem', 'padding': '0.5rem' }" *ngIf="authService.isLoggedIn()">
+    <p-menubar>
+        <ng-template pTemplate="start">
+            <div class="flex items-center gap-2">
+                <i class="pi pi-shopping-bag text-2xl text-gray-700"></i>
+                <span class="text-xl font-bold text-gray-900"><b>Abysalto</b></span>
+            </div>
+            <div class="flex align-items-center gap-2">
+                <i class="pi pi-user text-600"></i>
+                <span class="font-medium text-900">{{user?.firstName}} {{user?.lastName}}</span>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="end">
+                        <div class="flex align-items-center gap-4">
+                                <p-button label="Logout" icon="pi pi-sign-out" severity="danger" [outlined]="true" size="small"
+                                        (click)="logOut()">
+                                </p-button>
+                                <span style="display:inline-block; width: 1.5rem;"></span>
+                                <div class="cart-btn-wrapper">
+                                    <p-button 
+                                        icon="pi pi-shopping-cart" 
+                                        [outlined]="false" 
+                                        severity="info" 
+                                        class="p-button-rounded p-button-lg custom-cart-btn" 
+                                        [routerLink]="['/shopping-cart']">
+                                    </p-button>
+                                    <span *ngIf="cartQuantity > 0" class="custom-cart-badge-2 animate-badge">{{ cartQuantity }}</span>
+                                </div>
+                        </div>
+        </ng-template>
+    </p-menubar>
+</div>
 <router-outlet></router-outlet>

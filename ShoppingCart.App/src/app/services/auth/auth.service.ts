@@ -3,12 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, throwError } from 'rxjs';
 import { SignUpRequest, AuthResponse, SignInRequest } from 'src/app/models/models';
 import { environment } from 'src/environments/environment';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-
+  
+  private currentUserSource = new BehaviorSubject<any>(null);
   constructor(private http: HttpClient) { }
 
   getToken(): string | null {
@@ -21,6 +23,7 @@ export class AuthService {
 
   removeToken(): void {
     localStorage.removeItem(environment.tokenKey);
+    this.currentUserSource.next(null);
   }
 
   isLoggedIn(): boolean {
@@ -30,7 +33,7 @@ export class AuthService {
   signIn(credentials: SignInRequest): Observable<string> {
     const body = { email: credentials.email, password: credentials.password };
     return this.http
-      .post(`${environment.apiBase}/auth/login`, body, { responseType: 'text' as const })
+      .post<any>(`${environment.apiBase}/auth/login`, body)
       .pipe(catchError(this.handleError));
   }
 
@@ -46,7 +49,6 @@ export class AuthService {
     return this.http
       .post<any>(`${environment.apiBase}/auth/register`, body)
       .pipe(
-        // Custom error handling for EmailAlreadyExists
         catchError(this.handleError),
       );
   }
@@ -56,13 +58,18 @@ export class AuthService {
     if (error?.status === 0) {
       message = 'Cannot reach the API. Check that it is running and that the HTTPS certificate is trusted.';
     } else if (error?.status === 400) {
-      // Check for EmailAlreadyExists in the error response
       if (error?.error?.authResult?.failureReason === 'EmailAlreadyExists') {
         message = 'This email is already registered. Please use a different email or sign in.';
+      } else if (typeof error?.error?.failureReason === 'string') {
+        message = error.error.failureReason;
+      } else if (typeof error?.error === 'string') {
+        message = error.error;
       } else {
-        message = error?.error?.failureReason || error?.error || 'Invalid request. Please check your inputs.';
+        message = 'Invalid request. Please check your inputs.';
       }
+    } else if (typeof error?.message === 'string') {
+      message = error.message;
     }
-    return throwError(() => ({ status: error?.status, error: error?.error, message }));
+    return throwError(() => ({ status: error?.status, error: error?.error, message: String(message) }));
   }
 }

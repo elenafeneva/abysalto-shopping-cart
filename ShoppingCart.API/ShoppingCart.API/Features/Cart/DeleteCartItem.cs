@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
 using ShoppingCart.API.Services;
-using ShoppingCart.Domain.Entities;
 
 namespace ShoppingCart.API.Features
 {
@@ -9,7 +8,8 @@ namespace ShoppingCart.API.Features
     {
         public class Request : IRequest<Response>
         {
-            public Guid CartItemId { get; set; }
+            public int ProductId { get; set; }
+            public Guid UserId { get; set; }
         }
 
         public class Response
@@ -21,7 +21,10 @@ namespace ShoppingCart.API.Features
         {
             public Validator()
             {
-                RuleFor(x => x.CartItemId)
+                RuleFor(x => x.ProductId)
+                    .NotEmpty()
+                    .GreaterThan(0);
+                RuleFor(x => x.UserId)
                     .NotEmpty();
             }
         }
@@ -38,7 +41,7 @@ namespace ShoppingCart.API.Features
             public async Task<Response> Handle(Request request, CancellationToken cancellationToken)
             {
                 var response = new Response();
-                var cartItemDeleted = await _cartService.DeleteCartItemAsync(request.CartItemId);
+                var cartItemDeleted = await _cartService.DeleteCartItemAsync(request.ProductId, request.UserId);
                 response.CartItemDeleted = cartItemDeleted;
                 return response;
             }

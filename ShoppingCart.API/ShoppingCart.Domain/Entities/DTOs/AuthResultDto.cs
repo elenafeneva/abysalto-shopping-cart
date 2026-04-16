@@ -14,5 +14,9 @@ namespace ShoppingCart.API.Entities.DTOs
             Token = token;
             FailureReason = failureReason;
         }
+
+        public AuthResultDto()
+        {
+        }
     }
 }

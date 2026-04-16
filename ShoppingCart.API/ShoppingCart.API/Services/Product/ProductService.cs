@@ -34,6 +34,7 @@ namespace ShoppingCart.API.Services
             var content = await response.Content.ReadAsStringAsync();
             var json = JsonNode.Parse(content);
             var favoriteProductIds = await GetFavoriteProductIdsByUserIdAsync(userId);
+
             var product = new ProductDto
             {
                 Id = json?["id"]?.GetValue<int>() ?? 0,
@@ -53,16 +54,20 @@ namespace ShoppingCart.API.Services
             return product;
         }
 
-        public async Task<List<ProductDto>> GetProductsAsync(int limit, int skip, Guid userId)
+        public async Task<ProductPagedResponseDto> GetProductsAsync(int limit, int skip, string sortField, string sortOrder, Guid userId)
         {
-            var response = await _httpClient.GetAsync($"{_appSettings.DummyProductsUrl}?limit={limit}&skip={skip}");
+            var urlParams = $"limit={limit}&skip={skip}";
+            if (!string.IsNullOrWhiteSpace(sortField))
+                urlParams += $"&sortBy={sortField}&order={sortOrder}";
+            var response = await _httpClient.GetAsync($"{_appSettings.DummyProductsUrl}?{urlParams}");
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
             var json = JsonNode.Parse(content);
             var productsList = json?["products"]?.AsArray();
+            var totalNumberOfProducts = json?["total"]?.AsValue();
 
             if (productsList is null || !productsList.Any())
-                return new List<ProductDto>();
+                return new ProductPagedResponseDto();
 
             var favoriteProductIds = await GetFavoriteProductIdsByUserIdAsync(userId);
             var products = productsList.Select(p => new ProductDto
@@ -79,9 +84,15 @@ namespace ShoppingCart.API.Services
                 Sku = p["sku"]?.GetValue<string>() ?? string.Empty,
                 Weight = p["weight"]?.GetValue<double>() ?? 0.0,
                 Images = p["images"]?.AsArray().Select(i => i.GetValue<string>()).ToArray() ?? Array.Empty<string>(),
-                IsFavorite = favoriteProductIds.Contains(json?["id"]?.GetValue<int>() ?? 0)
+                IsFavorite = favoriteProductIds.Contains(p["id"]?.GetValue<int>() ?? 0)
             }).ToList();
-            return products;
+
+            var responseProducts = new ProductPagedResponseDto
+            {
+                Products = products,
+                TotalNumberOfProducts = (int)totalNumberOfProducts 
+            };
+            return responseProducts;
         }
 
         private async Task<List<int>> GetFavoriteProductIdsByUserIdAsync(Guid userId)

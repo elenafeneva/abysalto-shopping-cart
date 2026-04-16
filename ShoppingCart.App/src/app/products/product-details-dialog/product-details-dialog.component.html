@@ -1,0 +1,23 @@
+<p-dialog 
+    header="Product Details" 
+    [(visible)]="visible" 
+    (onHide)="closeDialog()"
+    [modal]="true" 
+    [style]="{ width: '50vw' }"
+    [draggable]="false">
+    
+    <div class="grid" *ngIf="product">
+        <div class="col-12 md:col-6">
+            <img [src]="product.images[0]" class="w-full border-round shadow-1" style="object-fit: contain; max-height: 250px;">
+        </div>
+        <div class="col-12 md:col-6">
+            <h3>{{ product.title }}</h3>
+            <p class="text-secondary">{{ product.description }}</p>
+            <div class="text-2xl font-bold text-primary mt-3">{{ product.price | currency }}</div>
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <p-button label="Add to Cart" icon="pi pi-shopping-cart" (onClick)="addToCart()"></p-button>
+    </ng-template>
+</p-dialog>

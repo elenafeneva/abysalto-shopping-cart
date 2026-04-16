@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingCart.API.Entities.Enums;
-using ShoppingCart.API.Features.Auth;
+using ShoppingCart.API.Features;
 
 namespace ShoppingCart.API.Controllers
 {
@@ -41,9 +41,7 @@ namespace ShoppingCart.API.Controllers
         {
             if(User?.Identity?.IsAuthenticated != true && string.IsNullOrWhiteSpace(User?.Identity?.Name))
                 return new QueryUser.Response();
-
-            var userId = Guid.Parse(User.Identity.Name);
-            return await _mediator.Send(new QueryUser.Request { Id = userId });
+            return await _mediator.Send(new QueryUser.Request { Id = Guid.Parse(User.Identity.Name) });
         }
     }
 }

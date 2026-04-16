@@ -4,7 +4,7 @@ using ShoppingCart.API.Entities.DTOs;
 using ShoppingCart.API.Services;
 using System.ComponentModel.DataAnnotations;
 
-namespace ShoppingCart.API.Features.Auth
+namespace ShoppingCart.API.Features
 {
     public class LoginUser 
     {
@@ -18,7 +18,7 @@ namespace ShoppingCart.API.Features.Auth
 
         public class Response
         {
-            public AuthResultDto AuthResult { get; set; }
+            public AuthResultDto AuthResult { get; set; } = new AuthResultDto();
         }
 
         public class Validator : AbstractValidator<Request>
